@@ -31,6 +31,7 @@ func main() {
 	http.HandleFunc("/", listAll)
 	http.HandleFunc("/time", listAllTime)
 	http.HandleFunc("/favicon.ico", nothing)
+	http.HandleFunc("/robots.txt", nothing)
 	http.HandleFunc("/sample", sampleview)
 	http.HandleFunc("/gif", getGIF)
 
@@ -300,7 +301,7 @@ func sampleview(rw http.ResponseWriter, req *http.Request) {
 
 	rw.Write([]byte(fmt.Sprintf("<h2>%s</h2>\n<p>.</p><h2>GIF</h2>", filename)))
 
-	rw.Write([]byte(fmt.Sprintf("<img src=/gif?id=%d>\n<h2>Syscalls:</h2>", iid)))
+	rw.Write([]byte(fmt.Sprintf("<img src=\"/gif?id=%d>\"\n<h2>Syscalls:</h2>", iid)))
 
 	rw.Write([]byte(`<table style="width:100%">
 	  <tr>
@@ -632,6 +633,9 @@ func AnnotateSyscall(Ah int, R gdb.X86Registers, full syscallCapture) string {
 		return fmt.Sprintf("(Filename = '%s')", string(full.DS))
 	case 0x3D: // Open File using Handle
 		i := strings.IndexByte(string(full.DS), 0x00)
+		if i == -1 {
+			return ""
+		}
 		// return fmt.Sprintf("(Filename = '%s') / RC</br>%s", string(full.DS[:i]), dumpReturnCode(full))
 		return fmt.Sprintf("(Filename = '%s')", string(full.DS[:i]))
 	case 0x3F: // Read using Handle
@@ -640,9 +644,15 @@ func AnnotateSyscall(Ah int, R gdb.X86Registers, full syscallCapture) string {
 		return fmt.Sprintf("(Write %d bytes on handle %d)", R.Ecx, R.Bx)
 	case 0x41: // Delete using Handle
 		i := strings.IndexByte(string(full.DS), 0x00)
+		if i == -1 {
+			return ""
+		}
 		return fmt.Sprintf("(Filename = '%s')", string(full.DS[:i]))
 	case 0x44: // Get/Set File Attributes
 		i := strings.IndexByte(string(full.DS), 0x00)
+		if i == -1 {
+			return ""
+		}
 		if R.Al == 00 {
 			return fmt.Sprintf("(Get for = '%s')", string(full.DS[:i]))
 		}
