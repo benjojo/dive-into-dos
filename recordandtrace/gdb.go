@@ -183,7 +183,7 @@ func (g *gdbTrace) backgroundTrace() {
 func FuckItProxy(lol net.Conn) {
 	l, err := net.Listen("tcp4", "localhost:1234")
 	if err != nil {
-		log.Printf("FUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUCK\n\n\n\nFUCK!\n\n%s\n\n", err)
+		log.Printf("FuckItProxy was not able to run\n\n\n\n\n%s\n\n", err)
 		return
 	}
 

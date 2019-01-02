@@ -879,8 +879,6 @@ func setRegister(register string, value uint16, g gdb.X86Registers) gdb.X86Regis
 		g.Edx = uint32(value)
 		return g
 
-		// lol you are now fucked
-
 	case "ah":
 		reg := make([]byte, 2)
 		binary.LittleEndian.PutUint16(reg, uint16(g.Eax))
